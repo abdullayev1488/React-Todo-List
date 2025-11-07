@@ -1,5 +1,5 @@
 // 🧠 React core hooks
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // 🆔 Unique ID generator
 import { v4 as uuidv4 } from 'uuid';
@@ -10,15 +10,21 @@ import "../App.css";
 // 🪟 Components
 import TodoModal from "./TodoModal";
 import TodoLists from "./TodoLists";
+import Toasts from "./Toasts/Toasts";
 import TodoSearch from "./TodoSearch";
 import EditTodoModal from "./EditTodoModal";
 
+// Utils
+import { saveToLocalStorage, getFromLocalStorage } from "./utils/localStorageUtil";
+
+
 function Todo() {
-    const [todos, setTodos] = useState([
-        { id: uuidv4(), title: "React-da komponentlərin necə işlədiyinə bax" },
-        { id: uuidv4(), title: "Portfolio saytı üçün dizayn wireframe hazırla" },
-        { id: uuidv4(), title: "HTML, CSS və JavaScript mövzularını təkrar et" }
-    ])
+    const [todos, setTodos] = useState(getFromLocalStorage("todos") || []);
+    useEffect(() => {
+        saveToLocalStorage("todos", todos)
+    }, [todos])
+
+    
     const [query, setQuery] = useState("")
     const [newTodo, setNewTodo] = useState("")
     const [showModal, setShowModal] = useState(false)
@@ -26,7 +32,6 @@ function Todo() {
     const [focusedEditTodo, setFocusedEditTodo] = useState(false)
     const editTodo = (editedTodo) => { setTodos(todos.map(todo => todo.id == editedTodo.id ? editedTodo : todo)); };
     const filteredTodos = todos.filter(todo => todo.title.toLowerCase().includes(query.trim().toLowerCase()))
-
 
     const addNewTodo = () => {
         if (!newTodo.trim()) {
@@ -42,23 +47,27 @@ function Todo() {
         setTodos([temp, ...todos]);
         setShowModal(false);
     };
+    const deleteTodo = (id) => { setTodos(todos.filter(todo => todo.id !== id)) }
 
-    const deleteTodo = (id) => {
-        setTodos(todos.filter(todo => todo.id !== id))
+    const [toasts, setToasts] = useState([])
 
+    const addToast = ({ message }) => {
+        setToasts([{ message, id: uuidv4() }, ...toasts])
     }
+    const removeToast = (id) => setToasts(prev => prev.filter(toast => toast.id !== id))
+
 
     return (
         <>
-            <h1 className="text-center text-white mt-3">Todo List</h1>
-
-            {showModal && <TodoModal setNewTodo={setNewTodo} addNewTodo={addNewTodo} setShowModal={setShowModal} />}
-            {showEditModal && <EditTodoModal editTodo={editTodo} setShowEditModal={setShowEditModal} focusedEditTodo={focusedEditTodo} />}
+            <h1 className="text-center text-white mt-3">Todo List ~ <span className=" text-warning ms-2">{todos.length}</span></h1>
+            <Toasts toasts={toasts} removeToast={removeToast} />
+            {showModal && <TodoModal addToast={addToast} setNewTodo={setNewTodo} addNewTodo={addNewTodo} setShowModal={setShowModal} />}
+            {showEditModal && <EditTodoModal addToast={addToast} editTodo={editTodo} setShowEditModal={setShowEditModal} focusedEditTodo={focusedEditTodo} />}
 
             <div className="d-flex mt-3 justify-content-center aligh-items-center position-relative">
                 <div className=" p-5 bg-light rounded shadow-lg">
                     <TodoSearch setQuery={setQuery} setShowModal={setShowModal} />
-                    <TodoLists deleteTodo={deleteTodo} filteredTodos={filteredTodos} setFocusedEditTodo={setFocusedEditTodo} setShowEditModal={setShowEditModal} />
+                    <TodoLists addToast={addToast} deleteTodo={deleteTodo} filteredTodos={filteredTodos} setFocusedEditTodo={setFocusedEditTodo} setShowEditModal={setShowEditModal} />
                 </div>
             </div>
         </>
@@ -66,35 +75,3 @@ function Todo() {
 }
 
 export default Todo
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const editTodo = (editedTodo) => {
-//     setTodos(todos.map(todo => {
-//         if (todo.id == editTodo.id) {
-//             return editTodo
-//         }
-//         return todo
-//     }))
-// }

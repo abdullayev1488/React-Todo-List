@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-function EditTodoModal({editTodo, setShowEditModal,focusedEditTodo}) {
+function EditTodoModal({editTodo, setShowEditModal,focusedEditTodo, addToast}) {
 
     const [title, setTitle] = useState(focusedEditTodo.title)
 
@@ -15,6 +15,7 @@ function EditTodoModal({editTodo, setShowEditModal,focusedEditTodo}) {
                             title:title,
                         })
                         setShowEditModal(false)
+                        addToast({message:"Todo editlendi"})
                     }} className="btn btn-success">Edit</button>
                     <button onClick={() => setShowEditModal(false)} className="btn btn-danger">Close</button>
                 </div>

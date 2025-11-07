@@ -1,4 +1,4 @@
-function TodoLists({ deleteTodo, filteredTodos, setShowEditModal, setFocusedEditTodo }) {
+function TodoLists({ deleteTodo, filteredTodos, setShowEditModal, setFocusedEditTodo, addToast }) {
     return (
         <ul className="list-group">
             {
@@ -7,7 +7,10 @@ function TodoLists({ deleteTodo, filteredTodos, setShowEditModal, setFocusedEdit
                         {todo.title}
                         <div className="d-flex gap-2">
                             <button onClick={() => { setShowEditModal(true); setFocusedEditTodo(todo) }} className="btn border border-primary">🖋️</button>
-                            <button onClick={() => deleteTodo(todo.id)} className="btn btn-danger">🗑️</button>
+                            <button onClick={() => {
+                                deleteTodo(todo.id)
+                                addToast({ message: `Todo silindi: ${todo.title}` })
+                            }} className="btn btn-danger">🗑️</button>
                         </div>
                     </li>
                 )
