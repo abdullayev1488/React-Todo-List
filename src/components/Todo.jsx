@@ -15,7 +15,7 @@ import TodoSearch from "./TodoSearch";
 import EditTodoModal from "./EditTodoModal";
 
 // Utils
-import { saveToLocalStorage, getFromLocalStorage } from "./utils/localStorageUtil";
+import { saveToLocalStorage, getFromLocalStorage } from "../utils/localStorageUtil";
 
 
 function Todo() {
